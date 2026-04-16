@@ -55,8 +55,8 @@ function initAutoUpdater() {
 }
 
 async function checkForUpdatesManual() {
-    const { dialog } = require('electron');
     try {
+        const { dialog } = require('electron');
         const result = await autoUpdater.checkForUpdates();
         // Se não houver update, o evento 'update-not-available' cuida do log, 
         // mas aqui vamos dar um feedback imediato se possível.

@@ -33,8 +33,9 @@ function createApplicationMenu() {
         {
           label: 'Sobre o Sistema',
           click: async () => {
-            const { version } = require('../package.json');
+            const { app, shell, dialog } = require('electron');
             const { checkForUpdatesManual } = require('./updater');
+            const version = app.getVersion();
             const { response } = await dialog.showMessageBox({
               type: 'info',
               title: 'Sobre o CØRE',
