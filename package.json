@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "CØRE - Sistema Operacional Comercial Híbrido",
   "main": "main/index.js",
   "scripts": {
@@ -19,8 +19,8 @@
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico",
-      "certificateFile": "assets/codesign.pfx",
-      "certificatePassword": "CorePDV@2025!"
+      "cscLink": "assets/codesign.pfx",
+      "cscKeyPassword": "CorePDV@2025!"
     },
     "nsis": {
       "oneClick": false,
