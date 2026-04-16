@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     permissions:
-      contents: write # Necessário para criar releases
+      contents: write
 
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -28,7 +28,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Electron App
+      - name: Reconstituir certificado de assinatura
+        run: |
+          $bytes = [Convert]::FromBase64String("${{ secrets.CSC_LINK }}")
+          [IO.File]::WriteAllBytes("${{ github.workspace }}\assets\codesign.pfx", $bytes)
+        shell: pwsh
+
+      - name: Build and Publish
         run: npm run dist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_LINK: ${{ github.workspace }}\assets\codesign.pfx
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}

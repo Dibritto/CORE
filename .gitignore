@@ -2,3 +2,5 @@ dist/
 build/
 node_modules/
 *.exe
+assets/codesign.pfx
+database/core.db
