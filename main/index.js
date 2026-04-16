@@ -33,16 +33,20 @@ function createApplicationMenu() {
         {
           label: 'Sobre o Sistema',
           click: async () => {
+            const { version } = require('../package.json');
+            const { checkForUpdatesManual } = require('./updater');
             const { response } = await dialog.showMessageBox({
               type: 'info',
               title: 'Sobre o CØRE',
-              message: 'CØRE PDV',
-              detail: 'Sistema Operacional Comercial Híbrido.\nVersão 1.0.0\n\nSuporte: https://dibritto-dev.blogspot.com/',
-              buttons: ['OK', 'Acessar Blog']
+              message: `CØRE PDV - v${version}`,
+              detail: `Desenvolvido por: Edmilson Britto\nContato: dimedebritto@gmail.com\n\nSistema Operacional Comercial Híbrido especializado em balcão industrial e comercial.`,
+              buttons: ['OK', 'Verificar Atualizações', 'Notas de Versão', 'Suporte'],
+              defaultId: 0
             });
-            if (response === 1) {
-              shell.openExternal('https://dibritto-dev.blogspot.com/');
-            }
+
+            if (response === 1) checkForUpdatesManual();
+            if (response === 2) shell.openExternal('https://github.com/Dibritto/CORE/releases');
+            if (response === 3) shell.openExternal('https://dibritto-dev.blogspot.com/');
           }
         },
         { type: 'separator' },

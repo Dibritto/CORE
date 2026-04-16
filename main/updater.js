@@ -54,4 +54,23 @@ function initAutoUpdater() {
     });
 }
 
-module.exports = { initAutoUpdater };
+async function checkForUpdatesManual() {
+    const { dialog } = require('electron');
+    try {
+        const result = await autoUpdater.checkForUpdates();
+        // Se não houver update, o evento 'update-not-available' cuida do log, 
+        // mas aqui vamos dar um feedback imediato se possível.
+        if (result && result.updateInfo.version === autoUpdater.currentVersion.version) {
+            dialog.showMessageBox({
+                type: 'info',
+                title: 'CØRE Update',
+                message: 'Você já está usando a versão mais recente!',
+                detail: `Versão atual: v${autoUpdater.currentVersion.version}`
+            });
+        }
+    } catch (e) {
+        dialog.showErrorBox('Erro', 'Não foi possível conectar ao servidor de atualizações. Verifique sua internet.');
+    }
+}
+
+module.exports = { initAutoUpdater, checkForUpdatesManual };
