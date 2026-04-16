@@ -29,12 +29,15 @@ jobs:
         run: npm ci
 
       - name: Reconstituir certificado de assinatura
+        shell: pwsh
         run: |
-          # Remove QUALQUER coisa que não seja caractere de Base64 (limpeza total)
-          $b64 = "${{ secrets.CSC_LINK }}" -replace '[^A-Za-z0-9+/=]', ''
+          # Usa Here-String para evitar problemas com aspas no conteúdo do Base64
+          $raw = @'
+          ${{ secrets.CSC_LINK }}
+          '@
+          $b64 = $raw -replace '[^A-Za-z0-9+/=]', ''
           $bytes = [Convert]::FromBase64String($b64)
           [IO.File]::WriteAllBytes("${{ github.workspace }}\assets\codesign.pfx", $bytes)
-        shell: pwsh
 
       - name: Build and Publish
         run: npm run dist
