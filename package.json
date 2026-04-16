@@ -1,0 +1,56 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "CØRE - Sistema Operacional Comercial Híbrido",
+  "main": "main/index.js",
+  "scripts": {
+    "start": "npx electron .",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "clean": "node -e \"const fs = require('fs'); ['dist', 'node_modules'].forEach(d => fs.rmSync(d, {recursive:true, force:true}))\"",
+    "migrate:passwords": "node scripts/migrate_passwords.js"
+  },
+  "build": {
+    "appId": "com.core.pdv",
+    "productName": "CORE PDV",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Dibritto",
+      "repo": "CORE",
+      "releaseType": "release"
+    },
+    "files": [
+      "**/*",
+      "!dist/*"
+    ],
+    "asarUnpack": [
+      "**/*.node"
+    ]
+  },
+  "keywords": [],
+  "author": "CØRE Dev",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^28.2.3",
+    "electron-builder": "^26.4.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "electron-log": "^5.4.3",
+    "electron-updater": "^6.8.3",
+    "sqlite3": "^5.1.7"
+  }
+}

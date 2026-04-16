@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';">
+    <title>CØRE PDV</title>
+    <link rel="stylesheet" href="design-system.css">
+</head>
+
+<body class="crt-effect">
+    <div class="scanlines"></div>
+    
+    <!-- LOGIN -->
+    <div id="login-overlay">
+        <div class="modal-box" style="width: 380px;">
+            <div class="modal-header">
+                <h2>CØRE :: ACESSO</h2>
+                <div class="header-dots"><div class="dot active"></div><div class="dot active"></div><div class="dot active"></div></div>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="login-user" placeholder="USUÁRIO" style="margin-bottom: 12px;" autofocus>
+                <input type="password" id="login-pass" placeholder="SENHA" style="margin-bottom: 12px;">
+                <p id="login-msg" style="margin-bottom: 20px; min-height: 20px; font-size: 0.9rem; color: var(--color-err-red);"></p>
+                <button id="login-btn" class="btn btn-primary btn-bracket" style="width: 100%;">ENTRAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRMAÇÃO -->
+    <!-- AUDITORIA -->
+    <div id="audit-overlay">
+        <div class="modal-box" style="width: 800px;">
+            <div class="modal-header"><h2>LOGS DE AUDITORIA</h2><div class="header-dots"><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <div style="height: 450px; overflow-y: auto; border: 1px solid var(--color-border-dim); background: var(--color-bg-input); margin-bottom: 20px;">
+                    <table class="report-table" style="font-size: 0.85rem;">
+                        <thead style="position: sticky; top:0; background: var(--color-bg-pure); z-index: 10;">
+                            <tr>
+                                <th>DATA</th>
+                                <th>OPERADOR</th>
+                                <th>AÇÃO</th>
+                                <th>DETALHES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-table-body"></tbody>
+                    </table>
+                </div>
+                <button id="close-audit-btn" class="btn btn-bracket" style="width: 100%;">FECHAR AUDITORIA</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-overlay">
+        <div class="modal-box" style="width: 450px;">
+            <div class="modal-header">
+                <h2>SISTEMA :: CONFIRMAÇÃO</h2>
+                <div class="header-dots"><div class="dot active"></div><div class="dot"></div><div class="dot active"></div></div>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p id="confirm-text" style="font-size: 1.25rem; margin-bottom: 30px; line-height: 1.4;"></p>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button id="confirm-yes-btn" class="btn btn-primary btn-bracket" style="min-width: 140px;">SIM</button>
+                    <button id="confirm-no-btn" class="btn btn-bracket" style="min-width: 140px;">NÃO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU PRINCIPAL -->
+    <div id="main-menu-overlay">
+        <div class="modal-box" style="width: 850px;">
+            <div class="modal-header">
+                <h2>CØRE :: MENU PRINCIPAL</h2>
+                <div class="header-dots"><div class="dot active"></div><div class="dot active"></div><div class="dot"></div></div>
+            </div>
+            <div class="modal-body">
+                <div class="menu-section">
+                    <h3 class="muted">OPERAÇÃO</h3>
+                    <div class="menu-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                        <button id="identify-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="CLIENTES" data-icon-size="32"></div> IDENTIFICAR</button>
+                        <button id="discount-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="DESCONTO" data-icon-size="32"></div> DESCONTO</button>
+                        <button id="fiado-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="CAIXA" data-icon-size="32"></div> FIADO</button>
+                        <button id="park-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="ESPERA" data-icon-size="32"></div> ESPERA</button>
+                    </div>
+                </div>
+                <div style="height: 25px;"></div>
+                <div class="menu-section">
+                    <h3 class="muted">GERÊNCIA & CAIXA</h3>
+                    <div class="menu-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                        <button id="cash-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="CAIXA" data-icon-size="32"></div> MOVIMENTAR</button>
+                        <button id="return-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="DEVOLUCAO" data-icon-size="32"></div> DEVOLUÇÃO</button>
+                        <button id="z-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="FINALIZAR" data-icon-size="32"></div> FECHAR CAIXA</button>
+                        <button id="new-prod-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="ESTOQUE" data-icon-size="32"></div> PRODUTOS</button>
+                        <button id="customers-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="CLIENTES" data-icon-size="32"></div> CLIENTES</button>
+                        <button id="report-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="RELATORIOS" data-icon-size="32"></div> RELATÓRIOS</button>
+                        <button id="low-stock-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="ALERTA" data-icon-size="32"></div> ESTOQUE BAIXO</button>
+                        <button id="dashboard-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="DASHBOARD" data-icon-size="32"></div> DASHBOARD</button>
+                        <button id="audit-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="RELATORIOS" data-icon-size="32"></div> AUDITORIA</button>
+                        <button id="settings-btn" class="btn btn-menu btn-bracket" style="display: none;"><div data-icon="CONFIGS" data-icon-size="32"></div> CONFIG</button>
+                    </div>
+                </div>
+                <div style="height: 30px;"></div>
+                <button id="close-menu-btn" class="btn btn-bracket" style="width: 100%;">VOLTAR (ESC)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RELATÓRIOS -->
+    <div id="report-overlay">
+        <div class="modal-box" style="width: 800px;">
+            <div class="modal-header">
+                <h2 id="report-title">RELATÓRIO</h2>
+                <div class="header-dots"><div class="dot active"></div><div class="dot active"></div></div>
+            </div>
+            <div class="modal-body">
+                <table class="report-table" id="report-table-body"></table>
+                <p id="report-msg" style="margin-top: 15px; min-height: 20px; font-size: 0.9rem; color: var(--color-err-red);"></p>
+                <button id="close-report-btn" class="btn btn-bracket" style="width: 100%; margin-top: 20px;">FECHAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DESCONTO -->
+    <div id="discount-overlay">
+        <div class="modal-box" style="width: 380px;">
+            <div class="modal-header"><h2>APLICAR DESCONTO</h2><div class="header-dots"><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <input type="number" id="discount-input" placeholder="VALOR (R$)" style="margin-bottom: 12px;">
+                <p id="discount-msg" style="margin-bottom: 15px; min-height: 20px; font-size: 0.9rem; color: var(--color-err-red);"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="confirm-discount-btn" class="btn btn-primary btn-bracket" style="flex: 1;">OK</button>
+                    <button id="close-discount-btn" class="btn btn-bracket" style="flex: 1;">VOLTAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard-overlay">
+        <div class="modal-box" style="width: 850px;">
+            <div class="modal-header"><h2>ESTATÍSTICAS</h2><div class="header-dots"><div class="dot active"></div><div class="dot red active"></div></div></div>
+            <div class="modal-body">
+                <h3 class="muted">VENDAS (7 DIAS)</h3>
+                <div id="sales-chart" class="chart-container"></div>
+                <div style="height: 20px;"></div>
+                <h3 class="muted">TOP 5 PRODUTOS</h3>
+                <div id="top-products-list"></div>
+                <button id="close-dashboard-btn" class="btn btn-bracket" style="width: 100%; margin-top: 30px;">FECHAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUTO -->
+    <div id="product-overlay">
+        <div class="modal-box" style="width: 480px;">
+            <div class="modal-header"><h2 id="prod-title">CADASTRO</h2><div class="header-dots"><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <input type="hidden" id="prod-id">
+                <input type="text" id="prod-name" placeholder="NOME DO PRODUTO" style="margin-bottom: 12px;">
+                <input type="number" id="prod-price" placeholder="PREÇO (R$)" style="margin-bottom: 12px;">
+                <input type="number" id="prod-stock" placeholder="ESTOQUE" style="margin-bottom: 12px;">
+                <input type="text" id="prod-ean" placeholder="EAN / BARCODE" style="margin-bottom: 12px;">
+                <p id="prod-msg" style="margin-bottom: 15px; min-height: 20px; font-size: 0.9rem; color: var(--color-err-red);"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="save-prod-btn" class="btn btn-primary btn-bracket" style="flex:1">SALVAR</button>
+                    <button id="close-prod-btn" class="btn btn-bracket" style="flex:1">SAIR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTOQUE -->
+    <div id="stock-overlay">
+        <div class="modal-box" style="width: 650px;">
+            <div class="modal-header"><h2>GESTOR DE ESTOQUE</h2><div class="header-dots"><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <h3 id="stock-prod-name" style="margin-bottom: 25px; color: var(--color-neon-green);">PRODUTO</h3>
+                <div id="replenish-area" style="border: 1px solid var(--color-border-dim); padding: 20px; margin-bottom: 25px; background: rgba(0,0,0,0.2);">
+                    <div style="display: flex; gap: 15px; align-items: flex-end;">
+                        <div style="flex: 1;">
+                            <label class="muted" style="display: block; margin-bottom: 5px; font-size: 0.8rem;">QUANTIDADE PARA REPOR</label>
+                            <input type="number" id="replenish-qty" placeholder="0">
+                        </div>
+                        <button id="confirm-replenish-btn" class="btn btn-primary btn-bracket" style="height: 48px;">REPOR AGORA</button>
+                    </div>
+                </div>
+                <h3 class="muted" style="font-size: 0.9rem; margin-bottom: 10px;">HISTÓRICO RECENTE</h3>
+                <div style="height: 180px; overflow-y: auto; border: 1px solid var(--color-border-dim); background: var(--color-bg-input); margin-bottom: 20px;">
+                    <table class="report-table" style="font-size: 0.85rem; border: none;">
+                        <tbody id="stock-history-body"></tbody>
+                    </table>
+                </div>
+                <p id="stock-msg" style="color: var(--color-err-red); min-height: 20px; margin-bottom: 15px;"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="print-label-btn" class="btn btn-bracket" style="flex:1">ETIQUETA</button>
+                    <button id="edit-prod-btn" class="btn btn-bracket" style="flex:1">EDITAR</button>
+                    <button id="delete-prod-btn" class="btn btn-danger btn-bracket" style="flex:1">DELETAR</button>
+                </div>
+                <button id="close-stock-btn" class="btn btn-bracket" style="width: 100%; margin-top: 15px;">FECHAR GESTOR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CAIXA -->
+    <div id="cash-overlay">
+        <div class="modal-box" style="width: 420px;">
+            <div class="modal-header"><h2>GESTOR DE CAIXA</h2><div class="header-dots"><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <label class="muted" style="display:block; margin-bottom:5px; font-size:0.8rem;">TIPO DE OPERAÇÃO</label>
+                <select id="cash-type" style="margin-bottom:15px;"><option value="out">SANGRIA (RETIRADA)</option><option value="in">SUPRIMENTO (ENTRADA)</option></select>
+                <input type="number" id="cash-amount" placeholder="VALOR (R$)" style="margin-bottom:15px;">
+                <input type="text" id="cash-reason" placeholder="MOTIVO / OBSERVAÇÃO" style="margin-bottom:15px;">
+                <p id="cash-msg" style="margin-bottom: 20px; min-height: 20px; font-size: 0.9rem; color: var(--color-err-red);"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="save-cash-btn" class="btn btn-primary btn-bracket" style="flex:1">CONFIRMAR</button>
+                    <button id="close-cash-btn" class="btn btn-bracket" style="flex:1">CANCELAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FECHAMENTO Z -->
+    <div id="z-overlay">
+        <div class="modal-box" style="width: 480px;">
+            <div class="modal-header"><h2>FECHAMENTO DE CAIXA (Z)</h2><div class="header-dots"><div class="dot active"></div><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <div style="background: rgba(0,255,0,0.05); padding: 15px; border: 1px dashed var(--color-border-dim); margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>VENDAS DINHEIRO:</span> <span id="z-sales-cash" style="color: var(--color-neon-green);">R$ 0,00</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>VENDAS FIADO:</span> <span id="z-sales-fiado" class="muted">R$ 0,00</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>TOTAL SUPRIMENTOS:</span> <span id="z-in">R$ 0,00</span></div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;"><span>TOTAL SANGRIAS:</span> <span id="z-out" style="color: var(--color-err-red);">R$ 0,00</span></div>
+                </div>
+                <div style="margin: 25px 0; text-align: center;">
+                    <span class="muted" style="display: block; font-size: 0.8rem; margin-bottom: 5px;">SALDO FINAL EM CAIXA</span>
+                    <div style="font-size: 2.2rem; font-weight: bold; color: var(--color-neon-green); text-shadow: 0 0 10px var(--color-neon-green-alpha);" id="z-balance">R$ 0,00</div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="print-z-btn" class="btn btn-bracket" style="flex:1">IMPRIMIR</button>
+                    <button id="share-z-btn" class="btn btn-primary btn-bracket" style="flex:1">WHATSAPP</button>
+                    <button id="close-z-btn" class="btn btn-bracket" style="flex:1">SAIR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEVOLUÇÃO -->
+    <div id="return-overlay">
+        <div class="modal-box" style="width: 380px;">
+            <div class="modal-header"><h2>SOLICITAR DEVOLUÇÃO</h2></div>
+            <div class="modal-body">
+                <label class="muted" style="display:block; margin-bottom:5px; font-size:0.8rem;">NÚMERO DO PEDIDO</label>
+                <input type="number" id="return-order-id" placeholder="Ex: 1024" style="margin-bottom:15px;">
+                <p id="return-msg" style="margin-bottom: 20px; color: var(--color-err-red); font-size: 0.9rem; min-height: 20px;"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="search-return-btn" class="btn btn-primary btn-bracket" style="flex:1">BUSCAR PEDIDO</button>
+                    <button id="close-return-btn" class="btn btn-bracket" style="flex:1">CANCELAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="return-items-overlay">
+        <div class="modal-box" style="width: 750px;">
+            <div class="modal-header"><h2>ITENS DO PEDIDO #<span id="return-order-display"></span></h2></div>
+            <div class="modal-body">
+                <table class="report-table">
+                    <thead><tr><th>PRODUTO</th><th>QTD</th><th>PREÇO</th><th>DEVOLVER</th></tr></thead>
+                    <tbody id="return-table-body"></tbody>
+                </table>
+                <p id="return-items-msg" style="margin: 15px 0; color: var(--color-err-red); min-height: 20px;"></p>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button id="confirm-return-btn" class="btn btn-primary btn-bracket" style="flex:1">CONFIRMAR DEVOLUÇÃO</button>
+                    <button id="cancel-return-items-btn" class="btn btn-bracket" style="flex:1">VOLTAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESPERA LISTA -->
+    <div id="parked-overlay">
+        <div class="modal-box" style="width: 550px;">
+            <div class="modal-header"><h2>PEDIDOS EM ESPERA</h2></div>
+            <div class="modal-body">
+                <div id="parked-list"></div>
+                <p id="parked-msg" style="margin: 15px 0; color: var(--color-err-red); min-height: 20px;"></p>
+                <button id="close-parked-btn" class="btn btn-bracket" style="width:100%">FECHAR LISTA</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="park-input-overlay">
+        <div class="modal-box" style="width: 380px;">
+            <div class="modal-header"><h2>ESTACIONAR VENDA</h2></div>
+            <div class="modal-body">
+                <input type="text" id="park-name-input" placeholder="NOME OU IDENTIFICADOR" style="margin-bottom: 12px;">
+                <p id="park-msg" style="margin-bottom: 20px; color: var(--color-err-red); min-height: 20px;"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="confirm-park-btn" class="btn btn-primary btn-bracket" style="flex:1">CONFIRMAR</button>
+                    <button id="close-park-input-btn" class="btn btn-bracket" style="flex:1">VOLTAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
+    <div id="settings-overlay">
+        <div class="modal-box" style="width: 700px;">
+            <div class="modal-header">
+                <h2>SYSTEM :: CONFIGURAÇÕES</h2>
+                <div class="header-dots"><div class="dot active"></div><div class="dot active"></div><div class="dot red active"></div></div>
+            </div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <!-- Coluna Esquerda: Visual -->
+                    <div>
+                        <h3 class="muted" style="margin-bottom: 15px; border-bottom: 1px solid var(--color-border-dim); padding-bottom: 5px;">IDENTIDADE VISUAL</h3>
+                        
+                        <label class="muted" style="display:block; margin-bottom:5px; font-size:0.75rem;">NOME DO ESTABELECIMENTO</label>
+                        <input type="text" id="store-name-input" placeholder="CØRE TECH" style="margin-bottom: 15px;">
+                        
+                        <label class="muted" style="display:block; margin-bottom:5px; font-size:0.75rem;">COR DO SISTEMA (NEON)</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input type="text" id="theme-color-input" placeholder="#00FF00" style="flex: 1;">
+                            <input type="color" id="theme-color-picker" style="width: 50px; height: 42px; padding: 2px; background: var(--color-bg-input); border: 1px solid var(--color-border-dim); cursor: pointer;">
+                        </div>
+
+                        <h3 class="muted" style="margin-top: 25px; margin-bottom: 15px; border-bottom: 1px solid var(--color-border-dim); padding-bottom: 5px;">FLUXO DE SAÍDA</h3>
+                        <label class="muted" style="display:block; margin-bottom:5px; font-size:0.75rem;">COMPORTAMENTO DO RECIBO</label>
+                        <select id="receipt-mode-input">
+                            <option value="none">SÓ FECHAR (SILENCIOSO)</option>
+                            <option value="pdf">GERAR PDF (VISUAILZAR)</option>
+                            <option value="whatsapp">WHATSAPP (DIRETO)</option>
+                            <option value="print">IMPRESSORA TÉRMICA (ESC/POS)</option>
+                        </select>
+                    </div>
+
+                    <!-- Coluna Direita: Sistema -->
+                    <div>
+                        <h3 class="muted" style="margin-bottom: 15px; border-bottom: 1px solid var(--color-border-dim); padding-bottom: 5px;">BACKUP & NUVEM</h3>
+                        <label class="muted" style="display:block; margin-bottom:5px; font-size:0.75rem;">DIRETÓRIO DE SINCRONIZAÇÃO</label>
+                        <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                            <input type="text" id="cloud-path-input" readonly placeholder="NÃO CONFIGURADO" style="flex: 1; font-size: 0.8rem; background: rgba(0,0,0,0.3);">
+                            <button id="select-folder-btn" class="btn btn-bracket" style="width: 45px;">...</button>
+                        </div>
+                        <p class="muted" style="font-size: 0.7rem; margin-bottom: 20px;">* Use pastas do Google Drive ou OneDrive para backup automático.</p>
+
+                        <h3 class="muted" style="margin-top: 25px; margin-bottom: 15px; border-bottom: 1px solid var(--color-err-red); color: var(--color-err-red); padding-bottom: 5px;">ZONA DE PERIGO</h3>
+                        <button id="clear-db-btn" class="btn btn-danger btn-bracket" style="width: 100%; height: 40px; font-size: 0.8rem;">LIMPAR TODO BANCO DE DADOS</button>
+                        <p class="muted" style="font-size: 0.7rem; margin-top: 5px; color: var(--color-err-red);">Ação irreversível. Exclui produtos e vendas.</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--color-border-dim); display: flex; gap: 15px; align-items: center;">
+                    <p id="settings-msg" style="flex: 1; min-height: 20px; color: var(--color-neon-green); font-weight: bold; font-size: 0.9rem;"></p>
+                    <button id="save-settings-btn" class="btn btn-primary btn-bracket" style="min-width: 200px;">APLICAR ALTERAÇÕES</button>
+                    <button id="close-settings-btn" class="btn btn-bracket" style="min-width: 120px;">VOLTAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUITAR DÍVIDA -->
+    <div id="pay-debt-overlay">
+        <div class="modal-box" style="width: 400px;">
+            <div class="modal-header"><h2>QUITAR DÉBITO EM ABERTO</h2></div>
+            <div class="modal-body">
+                <p id="pay-debt-info" style="margin-bottom: 20px; font-size: 1.15rem; color: var(--color-neon-green);"></p>
+                <input type="number" id="pay-debt-input" placeholder="VALOR DO PAGAMENTO (R$)" style="margin-bottom: 15px;">
+                <p id="pay-debt-msg" style="margin-bottom: 20px; color: var(--color-err-red); min-height: 20px; font-size: 0.9rem;"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="confirm-pay-debt-btn" class="btn btn-primary btn-bracket" style="flex:1">QUITAR AGORA</button>
+                    <button id="close-pay-debt-btn" class="btn btn-bracket" style="flex:1">CANCELAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLIENTES -->
+    <div id="customers-overlay">
+        <div class="modal-box" style="width: 800px;">
+            <div class="modal-header"><h2>BASE DE DADOS : CLIENTES</h2><div class="header-dots"><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                    <input type="text" id="customers-search" placeholder="FILTRAR POR NOME OU CPF/CNPJ..." style="flex: 1;">
+                    <button id="open-new-customer-btn" class="btn btn-primary btn-bracket">+ ADICIONAR CLIENTE</button>
+                </div>
+                <div style="height: 380px; overflow-y: auto; border: 1px solid var(--color-border-dim); background: var(--color-bg-input);">
+                    <div id="customers-list"></div>
+                </div>
+                <button id="close-customers-btn" class="btn btn-bracket" style="width: 100%; margin-top: 25px;">FECHAR CADASTRO (ESC)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="customer-form-overlay">
+        <div class="modal-box" style="width: 500px;">
+            <div class="modal-header"><h2>REGISTRO DE CLIENTE</h2></div>
+            <div class="modal-body">
+                <input type="text" id="cust-name" placeholder="NOME DO CLIENTE" style="margin-bottom: 12px;">
+                <input type="text" id="cust-phone" placeholder="WHATSAPP / CELULAR" style="margin-bottom: 12px;">
+                <input type="text" id="cust-cpf" placeholder="CPF OU CNPJ (OPCIONAL)" style="margin-bottom: 12px;">
+                <input type="text" id="cust-email" placeholder="EMAIL DE CONTATO" style="margin-bottom: 15px;">
+                <p id="cust-msg" style="margin-bottom: 20px; color: var(--color-err-red); min-height: 20px; font-size: 0.9rem;"></p>
+                <div style="display: flex; gap: 10px;">
+                    <button id="save-customer-btn" class="btn btn-primary btn-bracket" style="flex:1">CADASTRAR</button>
+                    <button id="close-customer-form-btn" class="btn btn-bracket" style="flex:1">DESISTIR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AJUDA -->
+    <div id="help-overlay">
+        <div class="modal-box" style="width: 550px;">
+            <div class="modal-header"><h2>SISTEMA :: GUIA DE COMANDOS</h2></div>
+            <div class="modal-body">
+                <div style="display: grid; grid-template-columns: 90px 1fr; gap: 15px; margin-bottom: 30px;">
+                    <div class="shortcut-label">F1</div> <div class="muted">FINALIZAR VENDA (PAY)</div>
+                    <div class="shortcut-label">F2</div> <div class="muted">VOLTAR AO MENU PRINCIPAL</div>
+                    <div class="shortcut-label">F12</div> <div class="muted">CANCELA ITEM OU LIMPA TUDO</div>
+                    <div class="shortcut-label">ESC</div> <div class="muted">FECHAR MODAIS OU VOLTAR</div>
+                    <div class="shortcut-label">SETAS</div> <div class="muted">NAVEGAR NA LISTA DE PRODUTOS</div>
+                    <div class="shortcut-label">ENTER</div> <div class="muted">LANÇAR PRODUTO NO CARRINHO</div>
+                </div>
+                <div style="background: rgba(0,255,0,0.05); padding: 20px; border-left: 3px solid var(--color-neon-green);">
+                    <p style="font-size: 1rem;">DICA: USE <span style="color: var(--color-neon-green);">QUANTIDADE * PRODUTO</span> PARA LANÇAR RÁPIDO (EX: 5*COCA).</p>
+                </div>
+                <button id="close-help-btn" class="btn btn-bracket" style="width: 100%; margin-top: 30px;">ENTENDI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CABEÇALHO -->
+    <div id="header" style="background: var(--color-bg-panel); border-bottom: 2px solid var(--color-neon-green); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+        <span id="header-store-name" style="font-weight: bold; letter-spacing: 3px;">CØRE PDV :: TERMINAL 01</span>
+        <button id="main-menu-btn" class="btn btn-bracket" style="display: none; height: 35px;">MENU (F2)</button>
+        <span id="user-display" class="muted">LOCAL_SESSION: OFFLINE</span>
+    </div>
+
+    <!-- ÁREA PRINCIPAL -->
+    <div id="main" style="display: flex; flex: 1; overflow: hidden; box-sizing: border-box;">
+        <div id="left-panel" style="flex: 1; display: flex; flex-direction: column; padding: 20px; border-right: 1px solid var(--color-border-dim); box-sizing: border-box;">
+            <input type="text" id="search-input" placeholder="BUSCAR (NOME, EAN OU QTD*ITEM)..." autofocus autocomplete="off" style="font-size: 1.5rem; border-color: var(--color-neon-green);">
+            <div id="product-list" style="flex:1; overflow-y: auto; margin-top: 15px;"></div>
+        </div>
+
+        <div id="right-panel" style="width: 38%; min-width: 400px; display: flex; flex-direction: column; background: var(--color-bg-pure); border-left: 1px solid var(--color-border-dim); box-sizing: border-box;">
+            <div id="customer-display" style="padding: 12px; background: var(--color-neon-green-alpha); color: var(--color-neon-green); text-align: center; border-bottom: 2px solid var(--color-neon-green); font-size: 0.95rem; font-weight: bold; letter-spacing: 1px;">
+                CLIENTE: CONSUMIDOR FINAL
+            </div>
+            <div id="cart-list" style="flex: 1; overflow-y: auto; padding: 20px;"></div>
+            <div id="total-box" style="background: var(--color-bg-input); border-top: 2px solid var(--color-neon-green); padding: 35px; font-size: 3.8rem; text-align: right; color: var(--color-neon-green); text-shadow: 0 0 15px var(--color-neon-green-alpha); font-weight: bold;">
+                R$ 0,00
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <div id="status-bar" style="padding: 10px 20px; background: #000; border-top: 1px solid var(--color-border-dim); font-size: 0.85rem; color: var(--color-neon-green-dim); box-sizing: border-box;">
+        CØRE TERMINAL v1.0.0 | [F1] PAGAR | [F2] MENU | [F12] CANCELAR | [ESC] SAIR
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="icons.js"></script>
+    <script src="renderer.js"></script>
+    <script>
+        window.addEventListener('load', () => {
+            if(window.CORE_ICONS) window.CORE_ICONS.injectIcons();
+        });
+    </script>
+</body>
+</html>
