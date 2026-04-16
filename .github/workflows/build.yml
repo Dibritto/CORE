@@ -30,7 +30,8 @@ jobs:
 
       - name: Reconstituir certificado de assinatura
         run: |
-          $bytes = [Convert]::FromBase64String("${{ secrets.CSC_LINK }}")
+          $b64 = "${{ secrets.CSC_LINK }}".Replace("`n","").Replace("`r","").Trim()
+          $bytes = [Convert]::FromBase64String($b64)
           [IO.File]::WriteAllBytes("${{ github.workspace }}\assets\codesign.pfx", $bytes)
         shell: pwsh
 
