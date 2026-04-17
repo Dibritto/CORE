@@ -60,7 +60,7 @@ function showInstallDialog(version) {
 
 // Tenta localizar o executável na pasta de downloads temporários do electron-updater
 function attemptManualInstall() {
-    const pendingFolder = path.join(app.getPath('userData'), '..', 'Local', 'core-updater', 'pending');
+    const pendingFolder = path.join(process.env.LOCALAPPDATA, 'core-updater', 'pending');
     
     if (fs.existsSync(pendingFolder)) {
         const files = fs.readdirSync(pendingFolder);
