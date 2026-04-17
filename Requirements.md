@@ -193,7 +193,7 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
     - **Problema:** O salvamento de arquivos só ocorria se modos específicos de compartilhamento fossem selecionados. O formato de saída era largo e com excesso de margens brancas (estilo A4), prejudicando a visualização.
     - **Solução:** O sistema agora garante o salvamento de JPG e PDF em **todas as vendas**, utilizando o modo `save-only` caso o usuário não opte por compartilhar. A largura da captura foi fixada em 320px (padrão de bobinas térmicas) e a altura é ajustada dinamicamente ao conteúdo, eliminando espaços vazios e garantindo legibilidade perfeita.
 
-61. **Fase de Finalização (Versão 1.0.1):**
+61. **Fase de Finalização (Versão 1.0.2):**
     - **Ação:** Fixação da versão oficial do PDV CØRE v1.0.1 com correções críticas no pipeline de atualização.
     - **Detalhes:** 
         - A String da versão na Interface (Barra de Status) foi convertida rigorosamente para coincidir com a label oficial de compilação semântica (v1.0.1) refletindo o estado maduro de Produção/Distribuição.
@@ -206,6 +206,6 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
         - Implementação de bloqueio de verificação em ambiente de desenvolvimento com aviso amigável ao desenvolvedor.
         - Mensagens traduzidas e polidas para manter o padrão de excelência do CØRE.
 
-63. **Unificação da Gestão Global de Produtos:**
+63. **Unificação da Gestão Global de Produtos (v1.0.2):**
     - **Problema:** A edição de produtos era inacessível para itens com estoque normal (apenas acessível via relatório de estoque baixo), dificultando a manutenção do catálogo.
     - **Solução:** O botão "PRODUTOS" do menu principal foi transformado em um **Gestor Global**. Agora ele abre uma lista completa com todos os produtos do sistema, permitindo pesquisa, edição de dados (Nome, Preço, EAN) e exclusão rápida para qualquer item, independentemente do saldo em estoque.
