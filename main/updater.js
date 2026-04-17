@@ -1,14 +1,16 @@
 const { autoUpdater } = require('electron-updater');
 const logger = require('./logger');
-const { dialog } = require('electron');
+const { dialog, app } = require('electron');
 
 function initAutoUpdater() {
     // Configura o logger do electron-updater para usar o nosso logger (electron-log no futuro, se integrado)
     autoUpdater.logger = logger;
     autoUpdater.autoDownload = true; // Baixa no background, offline-first não bloqueia
 
-    // Quando rodando em dev, não tentará atualizar para não crashear
-    if (process.env.NODE_ENV !== 'production' && !require('electron').app.isPackaged) return;
+    // No modo dev, o updater usará o arquivo dev-app-update.yml para simular o ambiente de produção
+    if (!app.isPackaged) {
+        logger.info('Auto-updater rodando em modo desenvolvimento (dev-app-update.yml ativo).');
+    }
 
     logger.info('Inicializando electron-updater...');
 
@@ -55,21 +57,39 @@ function initAutoUpdater() {
 }
 
 async function checkForUpdatesManual() {
+    const { dialog, app } = require('electron');
+    
+    // Em modo dev, o electron-updater agora usará o arquivo dev-app-update.yml
+    if (!app.isPackaged) {
+        logger.info('Verificação manual de update iniciada em modo desenvolvimento.');
+    }
+
     try {
-        const { dialog } = require('electron');
         const result = await autoUpdater.checkForUpdates();
-        // Se não houver update, o evento 'update-not-available' cuida do log, 
-        // mas aqui vamos dar um feedback imediato se possível.
+        
+        // Se chegar aqui sem erro e o resultado indicar que a versão é a mesma, informa o usuário positivamente.
         if (result && result.updateInfo.version === autoUpdater.currentVersion.version) {
             dialog.showMessageBox({
                 type: 'info',
                 title: 'CØRE Update',
-                message: 'Você já está usando a versão mais recente!',
-                detail: `Versão atual: v${autoUpdater.currentVersion.version}`
+                message: 'Sistema Atualizado!',
+                detail: `Você já está usando a versão mais recente do CØRE PDV (v${autoUpdater.currentVersion.version}).`
             });
         }
     } catch (e) {
-        dialog.showErrorBox('Erro', 'Não foi possível conectar ao servidor de atualizações. Verifique sua internet.');
+        logger.error(`Erro na verificação manual de update: ${e.message}`);
+        
+        // Tratamento para 404 ou arquivo manifesto ausente: interpreta como "já atualizado" para o usuário
+        if (e.message.indexOf('404') !== -1 || e.message.indexOf('latest.yml') !== -1) {
+            dialog.showMessageBox({
+                type: 'info',
+                title: 'CØRE Update',
+                message: 'Nenhuma nova atualização encontrada.',
+                detail: `O sistema está operando na versão v${require('electron').app.getVersion()} e não há manifestos de novas versões no servidor.`
+            });
+        } else {
+            dialog.showErrorBox('Erro de Conexão', 'Não foi possível conectar ao servidor de atualizações.\n\nVerifique sua internet ou tente novamente em alguns minutos. Se o erro persistir, consulte o suporte.');
+        }
     }
 }
 

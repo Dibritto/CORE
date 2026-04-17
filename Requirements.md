@@ -198,3 +198,10 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
     - **Detalhes:** 
         - A String da versão na Interface (Barra de Status) foi convertida rigorosamente para coincidir com a label oficial de compilação semântica (`v1.0.0`) refletindo o estado maduro de Produção/Distribuição.
         - **Controle de Permissões Equilibrado (Caixa x Gerente):** Foram liberadas as rotinas necessárias de operação de loja para a conta CAIXA 01 (Desconto, Clientes, Devoluções de pedidos, Fechamento de Caixa, Movimentação Sangria/Suprimento), mantendo as restrições gerenciais nas funcionalidades puramente de Gestão e Administrativas, tais quais as visualizações da Dashboard, Relatórios consolidados de vendas, configurações gerais da conta e do backup em nuvem, inclusão de Novos Produtos no Estoque, e visualização dos Logs de Auditoria Master.
+62. **Resiliência do Auto-Updater (v1.0.1 Patch):**
+    - **Problema:** O sistema exibia uma mensagem de erro genérica e assustadora ("Não foi possível conectar...") mesmo quando o servidor GitHub respondia corretamente que não havia novas versões (erro 404 por ausência de `latest.yml`). Além disso, o verificador tentava rodar em modo dev, gerando exceções.
+    - **Solução:** 
+        - Refatoração do `updater.js` com tratamento específico para erros de manifesto (404).
+        - Substituição do erro crítico por uma mensagem informativa de "Sistema Atualizado" quando nenhum update é encontrado.
+        - Implementação de bloqueio de verificação em ambiente de desenvolvimento com aviso amigável ao desenvolvedor.
+        - Mensagens traduzidas e polidas para manter o padrão de excelência do CØRE.

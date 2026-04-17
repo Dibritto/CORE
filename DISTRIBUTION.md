@@ -40,10 +40,10 @@ npm run dist
 
 > **ATENÇÃO:** No Windows, execute o terminal (PowerShell ou CMD) como **Administrador**. Isso é necessário para que o processo de build possa criar links simbólicos durante o empacotamento.
 
-### Artefatos Gerados
-Os arquivos compilados serão gerados na pasta `/dist`:
-- `CORE Setup 1.0.0.exe`: Instalador automático.
-- `win-unpacked/`: Versão portátil (para testes rápidos sem instalação).
+### Artefatos de Atualização (Auto-Update)
+Para que o sistema de atualização automática funcione, é obrigatório realizar o upload dos seguintes arquivos para o GitHub Releases:
+- `CORE Setup 1.0.0.exe` (ou versão atual)
+- `latest.yml`: Este arquivo é gerado pelo `electron-builder` e contém as informações de hash e versão necessárias para o `electron-updater` validar se há um novo download. Sem ele, o sistema reportará que não há atualizações disponíveis.
 
 ## 5. Estrutura de Arquivos e Logs
 
