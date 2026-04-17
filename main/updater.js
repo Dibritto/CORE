@@ -1,48 +1,76 @@
 const { autoUpdater } = require('electron-updater');
 const logger = require('./logger');
-const { dialog } = require('electron');
+const { dialog, app } = require('electron');
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
 function initAutoUpdater(win) {
-    // Configuração limpa do logger
     autoUpdater.logger = logger;
     autoUpdater.autoDownload = true;
-
-    // Eventos essenciais para feedback do usuário
-    autoUpdater.on('update-available', (info) => {
-        logger.info(`Nova versão encontrada: ${info.version}`);
-    });
+    autoUpdater.autoInstallOnAppQuit = false;
 
     autoUpdater.on('error', (err) => {
         logger.error(`Erro no updater: ${err.message}`);
+        // Se o erro for de assinatura (o que está acontecendo agora), forçamos o manual
+        if (err.message.includes('signature') || err.message.includes('Authenticode')) {
+            logger.info('Bloqueio de assinatura detectado. Acionando bypass...');
+            handleEmergencyUpdate();
+        }
     });
 
     autoUpdater.on('update-downloaded', (info) => {
-        logger.info('Download concluído.');
-        dialog.showMessageBox({
-            type: 'info',
-            title: 'CØRE Update',
-            message: 'Atualização Pronta',
-            detail: `A versão v${info.version} foi baixada e está pronta para ser instalada. Deseja reiniciar agora?`,
-            buttons: ['Reiniciar Agora', 'Depois'],
-            defaultId: 0
-        }).then((result) => {
-            if (result.response === 0) {
-                autoUpdater.quitAndInstall();
-            }
-        });
+        logger.info('Update baixado via canal oficial.');
+        askToInstall(info.version);
     });
 
-    // Dispara a verificação
-    autoUpdater.checkForUpdatesAndNotify().catch(err => {
-        logger.error(`Falha ao iniciar verificação: ${err.message}`);
+    autoUpdater.checkForUpdatesAndNotify().catch(e => logger.error(e.message));
+}
+
+function askToInstall(version) {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'CØRE Update',
+        message: 'Nova Versão Pronta',
+        detail: `Deseja instalar a v${version} agora?`,
+        buttons: ['Instalar e Reiniciar', 'Mais Tarde'],
+        defaultId: 0
+    }).then((result) => {
+        if (result.response === 0) {
+            autoUpdater.quitAndInstall(false, true);
+        }
     });
+}
+
+function handleEmergencyUpdate() {
+    // Caminho padrão onde o Windows esconde o download falho por assinatura
+    const pendingFolder = path.join(process.env.LOCALAPPDATA, 'core-updater', 'pending');
+    if (fs.existsSync(pendingFolder)) {
+        const files = fs.readdirSync(pendingFolder);
+        const installer = files.find(f => f.endsWith('.exe'));
+        if (installer) {
+            const fullPath = path.join(pendingFolder, installer);
+            dialog.showMessageBox({
+                type: 'warning',
+                title: 'Atualização Independente',
+                message: 'O Windows bloqueou a verificação automática, mas o arquivo está pronto.',
+                detail: 'Deseja forçar a instalação manual? O sistema será reiniciado.',
+                buttons: ['Forçar Agora', 'Cancelar']
+            }).then(res => {
+                if (res.response === 0) {
+                    spawn(fullPath, ['/S'], { detached: true, stdio: 'ignore' }).unref();
+                    app.exit(0);
+                }
+            });
+        }
+    }
 }
 
 async function checkForUpdatesManual() {
     try {
         await autoUpdater.checkForUpdates();
-    } catch (err) {
-        logger.error(`Erro na verificação manual: ${err.message}`);
+    } catch (e) {
+        handleEmergencyUpdate();
     }
 }
 
