@@ -1,7 +1,11 @@
 {
   "name": "core",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "CØRE - Sistema Operacional Comercial Híbrido",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dibritto/CORE.git"
+  },
   "main": "main/index.js",
   "scripts": {
     "start": "npx electron .",
@@ -16,14 +20,12 @@
     "directories": {
       "output": "dist"
     },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "Dibritto",
-        "repo": "CORE",
-        "releaseType": "release"
-      }
-    ],
+    "publish": {
+      "provider": "github",
+      "owner": "Dibritto",
+      "repo": "CORE",
+      "releaseType": "release"
+    },
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico",
