@@ -40,7 +40,7 @@ jobs:
           [IO.File]::WriteAllBytes("${{ github.workspace }}\assets\codesign.pfx", $bytes)
 
       - name: Build and Publish
-        run: npm run dist
+        run: npx electron-builder --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ github.workspace }}\assets\codesign.pfx
