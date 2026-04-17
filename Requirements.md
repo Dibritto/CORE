@@ -211,3 +211,10 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 63. **Unificação da Gestão Global de Produtos (v1.0.2):**
     - **Problema:** A edição de produtos era inacessível para itens com estoque normal (apenas acessível via relatório de estoque baixo), dificultando a manutenção do catálogo.
     - **Solução:** O botão "PRODUTOS" do menu principal foi transformado em um **Gestor Global**. Agora ele abre uma lista completa com todos os produtos do sistema, permitindo pesquisa, edição de dados (Nome, Preço, EAN) e exclusão rápida para qualquer item, independentemente do saldo em estoque.
+
+64. **Blindagem de Distribuição (v1.0.10 - Produção):**
+    - **Problema:** O instalador falhava em substituir os arquivos no Windows ao reiniciar devido a conflitos de permissão ou referências nulas.
+    - **Solução:** Implementação de autoInstallOnAppQuit e inclusão de delay no quitAndInstall para garantir um reinício limpo.
+
+65. **Teste de Estabilidade (v1.0.11):**
+    - **Ação:** Lançamento de nova versão para validar a infraestrutura de atualizações automáticas.
