@@ -136,6 +136,17 @@ const confirmOverlay = document.getElementById('confirm-overlay');
 const confirmText = document.getElementById('confirm-text');
 const confirmYesBtn = document.getElementById('confirm-yes-btn');
 const confirmNoBtn = document.getElementById('confirm-no-btn');
+const auditBtn = document.getElementById('audit-btn');
+const auditOverlay = document.getElementById('audit-overlay');
+const auditTableBody = document.getElementById('audit-table-body');
+const closeAuditBtn = document.getElementById('close-audit-btn');
+
+const manageProductsOverlay = document.getElementById('manage-products-overlay');
+const manageProductsSearch = document.getElementById('manage-products-search');
+const manageProductsTableBody = document.getElementById('manage-products-table-body');
+const openNewProductFormBtn = document.getElementById('open-new-product-form-btn');
+const closeManageProductsBtn = document.getElementById('close-manage-products-btn');
+
 let resolveConfirm = null; // Variável para controlar a Promise do modal de confirmação
 let currentStockProduct = null;
 let currentZData = null;
@@ -171,7 +182,7 @@ function closeAllModals(except = []) {
         discountOverlay, parkedOverlay, parkInputOverlay, customersOverlay, 
         customerFormOverlay, settingsOverlay, productOverlay, stockOverlay, 
         cashOverlay, returnOverlay, returnItemsOverlay, zOverlay, 
-        helpOverlay, payDebtOverlay
+        helpOverlay, payDebtOverlay, manageProductsOverlay
     ];
     overlays.forEach(el => {
         if (el && !except.includes(el) && !except.includes(el.id)) {
@@ -830,6 +841,9 @@ async function saveProduct() {
             // Recarrega lista
             products = await window.api.invoke('get-products');
             renderProducts(products);
+            if (manageProductsOverlay.style.display === 'flex') {
+                renderManageProducts(products);
+            }
         } else {
             setProductMessage('Erro: ' + result.error, true);
         }
@@ -861,6 +875,39 @@ function openEditProduct() {
     prodNameIn.focus();
 }
 
+async function showManageProducts() {
+    closeAllModals(['manage-products-overlay']);
+    manageProductsSearch.value = '';
+    renderManageProducts(products);
+    manageProductsOverlay.style.display = 'flex';
+    manageProductsSearch.focus();
+}
+
+function renderManageProducts(list) {
+    manageProductsTableBody.innerHTML = '';
+    list.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${p.name}</td>
+            <td>${p.ean || '-'}</td>
+            <td style="color: var(--color-primary);">R$ ${(p.price / 100).toFixed(2)}</td>
+            <td>${p.stock}</td>
+            <td>
+                <button class="btn btn-bracket btn-small" style="padding: 2px 8px; font-size: 0.7rem;" onclick="editProductFromList(${p.id})">GERENCIAR</button>
+            </td>
+        `;
+        manageProductsTableBody.appendChild(tr);
+    });
+}
+
+async function editProductFromList(id) {
+    const product = products.find(p => p.id === id);
+    if (product) {
+        manageStock(product);
+    }
+}
+window.editProductFromList = editProductFromList;
+
 async function deleteProduct() {
     if (!currentStockProduct) return;
     if (!await showConfirm(`Tem certeza que deseja EXCLUIR "${currentStockProduct.name}"?\nEle não aparecerá mais nas vendas.`)) return;
@@ -872,6 +919,9 @@ async function deleteProduct() {
         currentStockProduct = null;
         products = await window.api.invoke('get-products');
         renderProducts(products);
+        if (manageProductsOverlay.style.display === 'flex') {
+            renderManageProducts(products);
+        }
     } else {
         setOverlayMessage(stockMsg, 'Erro ao excluir: ' + result.error, true);
     }
@@ -1482,15 +1532,31 @@ async function showAuditLogs() {
     }
 }
 
-newProdBtn.onclick = () => {
+newProdBtn.onclick = showManageProducts;
+
+openNewProductFormBtn.onclick = () => {
     prodTitle.innerText = "NOVO PRODUTO";
     prodIdIn.value = '';
     prodNameIn.value = ''; prodPriceIn.value = ''; prodStockIn.value = ''; prodEanIn.value = '';
     prodStockIn.disabled = false;
     setProductMessage('', false);
     productOverlay.style.display = 'flex';
-    mainMenuOverlay.style.display = 'none';
+    // Não fecha o manage-products-overlay, permite voltar
     prodNameIn.focus();
+};
+
+manageProductsSearch.oninput = () => {
+    const query = manageProductsSearch.value.toLowerCase();
+    const filtered = products.filter(p => 
+        p.name.toLowerCase().includes(query) || 
+        (p.ean && p.ean.includes(query))
+    );
+    renderManageProducts(filtered);
+};
+
+closeManageProductsBtn.onclick = () => {
+    manageProductsOverlay.style.display = 'none';
+    mainMenuOverlay.style.display = 'flex';
 };
 
 closeProdBtn.onclick = () => {

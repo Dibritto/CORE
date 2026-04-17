@@ -394,6 +394,34 @@
         </div>
     </div>
 
+    <!-- GERENCIAR PRODUTOS -->
+    <div id="manage-products-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-bg-overlay); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-box" style="width: 900px;">
+            <div class="modal-header"><h2>GESTOR GLOBAL DE PRODUTOS</h2><div class="header-dots"><div class="dot active"></div></div></div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <input type="text" id="manage-products-search" placeholder="PESQUISAR PRODUTO NO ACERVO..." style="flex: 1;">
+                    <button id="open-new-product-form-btn" class="btn btn-primary btn-bracket" style="width: 250px;">+ NOVO PRODUTO</button>
+                </div>
+                <div style="height: 420px; overflow-y: auto; border: 1px solid var(--color-border-dim); background: var(--color-bg-input); margin-bottom: 20px;">
+                    <table class="report-table" style="font-size: 0.85rem;">
+                        <thead style="position: sticky; top:0; background: var(--color-bg-pure); z-index: 10;">
+                            <tr>
+                                <th>PRODUTO</th>
+                                <th style="width: 150px;">EAN</th>
+                                <th style="width: 100px;">PREÇO</th>
+                                <th style="width: 100px;">ESTOQUE</th>
+                                <th style="width: 120px;">AÇÕES</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manage-products-table-body"></tbody>
+                    </table>
+                </div>
+                <button id="close-manage-products-btn" class="btn btn-bracket" style="width: 100%;">VOLTAR AO MENU (ESC)</button>
+            </div>
+        </div>
+    </div>
+
     <div id="customer-form-overlay">
         <div class="modal-box" style="width: 500px;">
             <div class="modal-header"><h2>REGISTRO DE CLIENTE</h2></div>

@@ -205,3 +205,7 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
         - Substituição do erro crítico por uma mensagem informativa de "Sistema Atualizado" quando nenhum update é encontrado.
         - Implementação de bloqueio de verificação em ambiente de desenvolvimento com aviso amigável ao desenvolvedor.
         - Mensagens traduzidas e polidas para manter o padrão de excelência do CØRE.
+
+63. **Unificação da Gestão Global de Produtos:**
+    - **Problema:** A edição de produtos era inacessível para itens com estoque normal (apenas acessível via relatório de estoque baixo), dificultando a manutenção do catálogo.
+    - **Solução:** O botão "PRODUTOS" do menu principal foi transformado em um **Gestor Global**. Agora ele abre uma lista completa com todos os produtos do sistema, permitindo pesquisa, edição de dados (Nome, Preço, EAN) e exclusão rápida para qualquer item, independentemente do saldo em estoque.
