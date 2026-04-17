@@ -225,3 +225,6 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 
 67. **Teste de Estabilidade do Disparador (v1.0.13):**
     - **Ação:** Lançamento de versão para testar a transição entre v1.0.12 e v1.0.13 via processo independente.
+
+68. **Validação Final da Arquitetura (v1.0.17):**
+    - **Ação:** Teste de transição automática entre v1.0.16 e v1.0.17.
