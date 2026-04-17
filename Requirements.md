@@ -222,3 +222,6 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 66. **Disparador de Emergência Independente (v1.0.12):**
     - **Problema:** O instalador era bloqueado pelo Windows devido à ausência de assinatura digital (Authenticode Signature), impedindo o evento de conclusão do update.
     - **Solução:** Implementação de um manipulador de erro que ignora falhas de assinatura, localiza o arquivo .exe fisicamente na pasta temp e dispara o processo de instalação via 'spawn' independente. O sistema se fecha imediatamente após o disparo para liberar o executável.
+
+67. **Teste de Estabilidade do Disparador (v1.0.13):**
+    - **Ação:** Lançamento de versão para testar a transição entre v1.0.12 e v1.0.13 via processo independente.
