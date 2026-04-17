@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "CØRE - Sistema Operacional Comercial Híbrido",
   "main": "main/index.js",
   "scripts": {
@@ -16,6 +16,14 @@
     "directories": {
       "output": "dist"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Dibritto",
+        "repo": "CORE",
+        "releaseType": "release"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico",

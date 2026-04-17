@@ -193,12 +193,12 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
     - **Problema:** O salvamento de arquivos só ocorria se modos específicos de compartilhamento fossem selecionados. O formato de saída era largo e com excesso de margens brancas (estilo A4), prejudicando a visualização.
     - **Solução:** O sistema agora garante o salvamento de JPG e PDF em **todas as vendas**, utilizando o modo `save-only` caso o usuário não opte por compartilhar. A largura da captura foi fixada em 320px (padrão de bobinas térmicas) e a altura é ajustada dinamicamente ao conteúdo, eliminando espaços vazios e garantindo legibilidade perfeita.
 
-61. **Fase de Produção e Teste (Versão 1.0.6):**
-    - **Ação:** Teste final do pipeline de auto-update e feedback visual.
+61. **Fase de Produção e Teste (Versão 1.0.7):**
+    - **Ação:** Teste final do pipeline de auto-update com publicação forçada.
     - **Detalhes:**
-        - Remoção da assinatura do desenvolvedor no rodapé.
-        - Validação da barra de progresso (0-100%) em ambiente real.
-        - Verificação da integridade do login e gestor global.
+        - Adição do bloco 'publish' no package.json para evitar rascunhos (Drafts).
+        - Remoção da assinatura do desenvolvedor no rodapé (v1.0.6+).
+        - Validação da barra de progresso em tempo real.
         - **Controle de Permissões Equilibrado (Caixa x Gerente):** Foram liberadas as rotinas necessárias de operação de loja para a conta CAIXA 01 (Desconto, Clientes, Devoluções de pedidos, Fechamento de Caixa, Movimentação Sangria/Suprimento), mantendo as restrições gerenciais nas funcionalidades puramente de Gestão e Administrativas, tais quais as visualizações da Dashboard, Relatórios consolidados de vendas, configurações gerais da conta e do backup em nuvem, inclusão de Novos Produtos no Estoque, e visualização dos Logs de Auditoria Master.
 62. **Resiliência do Auto-Updater (v1.0.1 Patch):**
     - **Problema:** O sistema exibia uma mensagem de erro genérica e assustadora ("Não foi possível conectar...") mesmo quando o servidor GitHub respondia corretamente que não havia novas versões (erro 404 por ausência de `latest.yml`). Além disso, o verificador tentava rodar em modo dev, gerando exceções.
