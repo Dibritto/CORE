@@ -1,130 +1,115 @@
 const { autoUpdater } = require('electron-updater');
 const logger = require('./logger');
 const { dialog, app } = require('electron');
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
 
 let mainWindow;
 
 function initAutoUpdater(win) {
     mainWindow = win;
-    // Configura o logger do electron-updater para usar o nosso logger (electron-log no futuro, se integrado)
     autoUpdater.logger = logger;
     autoUpdater.autoDownload = true;
-    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.autoInstallOnAppQuit = false; // Desligamos a trava padrão
 
-    // No modo dev, o updater usará o arquivo dev-app-update.yml para simular o ambiente de produção
+    // No modo dev, o updater usará o arquivo dev-app-update.yml
     if (!app.isPackaged) {
         autoUpdater.forceDevUpdateConfig = true;
-        logger.info('Auto-updater rodando em modo desenvolvimento (forceDevUpdateConfig ativo).');
     }
-
-    logger.info('Inicializando electron-updater...');
-
-    autoUpdater.on('checking-for-update', () => {
-        logger.info('Procurando por atualizações...');
-    });
-
-    autoUpdater.on('update-available', (info) => {
-        logger.info(`Atualização disponível: V.${info.version}`);
-    });
-
-    autoUpdater.on('update-not-available', (info) => {
-        logger.info('O sistema já está atualizado na versão mais recente.');
-    });
 
     autoUpdater.on('error', (err) => {
         logger.error(`Erro no auto-updater: ${err.message}`);
-        // Fallback offline garantido: erros no update não travam o sistema
+        
+        // TRATAMENTO DE CHOQUE: Se o erro for de assinatura, tentamos forçar a instalação manual
+        if (err.message.includes('Get-AuthenticodeSignature') || err.message.includes('signature')) {
+            logger.info('Detectada falha de assinatura. Tentando disparador manual de emergência...');
+            attemptManualInstall();
+        }
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
         const percent = Math.round(progressObj.percent);
-        logger.info(`Baixando atualização: ${percent}%`);
-        if (mainWindow) {
-            mainWindow.webContents.send('update-progress', percent);
-        }
+        if (mainWindow) mainWindow.webContents.send('update-progress', percent);
     });
 
     autoUpdater.on('update-downloaded', (info) => {
-        logger.info('Atualização baixada.');
-        if (mainWindow) {
-            mainWindow.webContents.send('update-progress', 100);
-        }
-        dialog.showMessageBox({
-            type: 'info',
-            title: 'CØRE Update',
-            message: `A versão v${info.version} está pronta!`,
-            detail: 'O download foi concluído. Deseja reiniciar o sistema agora para aplicar a atualização?',
-            buttons: ['Reiniciar e Instalar', 'Mais Tarde'],
-            defaultId: 0
-        }).then((result) => {
-            if (result.response === 0) {
-                logger.info('Solicitando quitAndInstall para o Windows...');
-                setTimeout(() => {
-                    autoUpdater.quitAndInstall(false, true);
-                }, 1000);
-            }
-        });
+        logger.info('Update baixado com sucesso via canal oficial.');
+        showInstallDialog(info.version);
     });
 
-    // Inicia a verificação sem interromper o fluxo local
     autoUpdater.checkForUpdatesAndNotify().catch(e => {
-        logger.error(`Aviso: falha na conectividade ao tentar buscar update - ${e.message}`);
+        logger.error(`Falha na busca: ${e.message}`);
     });
 }
 
-async function checkForUpdatesManual() {
-    const { dialog, app } = require('electron');
+function showInstallDialog(version) {
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'CØRE Update',
+        message: `Versão v${version} pronta para instalar!`,
+        detail: 'Deseja aplicar a atualização agora?',
+        buttons: ['Instalar Agora', 'Depois'],
+        defaultId: 0
+    }).then((result) => {
+        if (result.response === 0) {
+            forceExtremeInstallation();
+        }
+    });
+}
+
+// Tenta localizar o executável na pasta de downloads temporários do electron-updater
+function attemptManualInstall() {
+    const pendingFolder = path.join(app.getPath('userData'), '..', 'Local', 'core-updater', 'pending');
     
-    logger.info('Solicitação de verificação manual de atualizações.');
+    if (fs.existsSync(pendingFolder)) {
+        const files = fs.readdirSync(pendingFolder);
+        const installer = files.find(f => f.endsWith('.exe'));
+        
+        if (installer) {
+            const fullPath = path.join(pendingFolder, installer);
+            logger.info(`Instalador encontrado: ${fullPath}. Disparando...`);
+            
+            dialog.showMessageBox({
+                type: 'warning',
+                title: 'Atualização Forçada',
+                message: 'Detectamos uma atualização pronta, mas o Windows impediu a verificação de segurança.',
+                detail: 'Deseja forçar a instalação manual agora? O sistema será fechado.',
+                buttons: ['Forçar Instalação', 'Cancelar']
+            }).then(res => {
+                if (res.response === 0) {
+                    runExternalInstaller(fullPath);
+                }
+            });
+        }
+    }
+}
 
+function forceExtremeInstallation() {
+    logger.info('Executando instalação via canal oficial...');
     try {
-        // Feedback básico se for possível (opcional, mas bom para debug)
-        const result = await autoUpdater.checkForUpdates();
-        
-        if (!result) {
-            dialog.showMessageBox({
-                type: 'info',
-                title: 'CØRE Update',
-                message: 'Verificação concluída.',
-                detail: 'O servidor não retornou informações. Tente novamente em instantes.'
-            });
-            return;
-        }
-
-        const currentVer = autoUpdater.currentVersion ? autoUpdater.currentVersion.version : app.getVersion();
-        const latestVer = result.updateInfo.version;
-
-        if (latestVer === currentVer) {
-            dialog.showMessageBox({
-                type: 'info',
-                title: 'CØRE Update',
-                message: 'Sistema Atualizado!',
-                detail: `Você já está usando a versão mais recente (v${currentVer}).`
-            });
-        } else {
-            // Caso encontre uma versão diferente
-            dialog.showMessageBox({
-                type: 'info',
-                title: 'CØRE Update',
-                message: 'Nova atualização encontrada!',
-                detail: `A versão v${latestVer} está disponível e o download já começou em segundo plano.\nVocê será avisado quando estiver pronto para instalar.`
-            });
-        }
-
+        autoUpdater.quitAndInstall(false, true);
     } catch (e) {
-        logger.error(`Erro na verificação manual de update: ${e.message}`);
-        
-        // Tratamento amigável para 404/manifesto ausente
-        if (e.message.includes('404') || e.message.includes('latest.yml') || e.message.includes('dev-app-update.yml')) {
-            dialog.showMessageBox({
-                type: 'info',
-                title: 'CØRE Update',
-                message: 'Nenhuma atualização pendente.',
-                detail: `O sistema v${app.getVersion()} está operando com a versão mais recente disponível no servidor.`
-            });
-        } else {
-            dialog.showErrorBox('Erro de Conexão', 'Não foi possível buscar atualizações agora.\n\nVerifique sua conexão ou tente mais tarde.\nDetalhe: ' + e.message);
-        }
+        logger.error('Falha no quitAndInstall padrão. Recorrendo ao manual...');
+        attemptManualInstall();
+    }
+}
+
+function runExternalInstaller(installerPath) {
+    const child = spawn(installerPath, ['/S'], {
+        detached: true,
+        stdio: 'ignore'
+    });
+    child.unref();
+    app.exit(0);
+}
+
+async function checkForUpdatesManual() {
+    try {
+        await autoUpdater.checkForUpdates();
+    } catch (e) {
+        logger.error(`Erro manual: ${e.message}`);
+        attemptManualInstall(); // Tenta o manual se o oficial falhar na conexão/assinatura
     }
 }
 

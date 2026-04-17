@@ -218,3 +218,7 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 
 65. **Teste de Estabilidade (v1.0.11):**
     - **Ação:** Lançamento de nova versão para validar a infraestrutura de atualizações automáticas.
+
+66. **Disparador de Emergência Independente (v1.0.12):**
+    - **Problema:** O instalador era bloqueado pelo Windows devido à ausência de assinatura digital (Authenticode Signature), impedindo o evento de conclusão do update.
+    - **Solução:** Implementação de um manipulador de erro que ignora falhas de assinatura, localiza o arquivo .exe fisicamente na pasta temp e dispara o processo de instalação via 'spawn' independente. O sistema se fecha imediatamente após o disparo para liberar o executável.
