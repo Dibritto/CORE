@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "CØRE - Sistema Operacional Comercial Híbrido",
   "main": "main/index.js",
   "scripts": {
