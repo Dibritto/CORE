@@ -8,7 +8,8 @@ function initAutoUpdater(win) {
     mainWindow = win;
     // Configura o logger do electron-updater para usar o nosso logger (electron-log no futuro, se integrado)
     autoUpdater.logger = logger;
-    autoUpdater.autoDownload = true; // Baixa no background, offline-first não bloqueia
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
 
     // No modo dev, o updater usará o arquivo dev-app-update.yml para simular o ambiente de produção
     if (!app.isPackaged) {
@@ -57,7 +58,10 @@ function initAutoUpdater(win) {
             defaultId: 0
         }).then((result) => {
             if (result.response === 0) {
-                autoUpdater.quitAndInstall();
+                logger.info('Solicitando quitAndInstall para o Windows...');
+                setTimeout(() => {
+                    autoUpdater.quitAndInstall(false, true);
+                }, 1000);
             }
         });
     });
