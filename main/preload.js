@@ -22,7 +22,7 @@ contextBridge.exposeInMainWorld('api', {
   // Funções para o backend enviar eventos para o frontend
   on: (channel, func) => {
     // Lista de canais permitidos para escuta (segurança)
-    const allowedOnChannels = ['show-help'];
+    const allowedOnChannels = ['show-help', 'update-progress'];
     if (allowedOnChannels.includes(channel)) {
       // Envolve o callback para evitar vazamento de referências
       const subscription = (event, ...args) => func(...args);

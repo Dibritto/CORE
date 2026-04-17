@@ -2,7 +2,10 @@ const { autoUpdater } = require('electron-updater');
 const logger = require('./logger');
 const { dialog, app } = require('electron');
 
-function initAutoUpdater() {
+let mainWindow;
+
+function initAutoUpdater(win) {
+    mainWindow = win;
     // Configura o logger do electron-updater para usar o nosso logger (electron-log no futuro, se integrado)
     autoUpdater.logger = logger;
     autoUpdater.autoDownload = true; // Baixa no background, offline-first não bloqueia
@@ -33,17 +36,25 @@ function initAutoUpdater() {
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
-        let msg = `Baixando atualização: ${Math.round(progressObj.percent)}%`;
-        logger.info(msg);
+        const percent = Math.round(progressObj.percent);
+        logger.info(`Baixando atualização: ${percent}%`);
+        if (mainWindow) {
+            mainWindow.webContents.send('update-progress', percent);
+        }
     });
 
     autoUpdater.on('update-downloaded', (info) => {
-        logger.info('Atualização baixada. O sistema será atualizado no próximo reinício.');
+        logger.info('Atualização baixada.');
+        if (mainWindow) {
+            mainWindow.webContents.send('update-progress', 100);
+        }
         dialog.showMessageBox({
             type: 'info',
-            title: 'Atualização Pronta',
-            message: `A versão ${info.version} foi baixada no fundo.\nDeseja reiniciar o CØRE PDV agora para atualizar?`,
-            buttons: ['Reiniciar Agora', 'Depois']
+            title: 'CØRE Update',
+            message: `A versão v${info.version} está pronta!`,
+            detail: 'O download foi concluído. Deseja reiniciar o sistema agora para aplicar a atualização?',
+            buttons: ['Reiniciar e Instalar', 'Mais Tarde'],
+            defaultId: 0
         }).then((result) => {
             if (result.response === 0) {
                 autoUpdater.quitAndInstall();

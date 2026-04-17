@@ -229,6 +229,15 @@ window.api.on('show-help', () => {
     helpOverlay.style.display = 'flex';
 });
 
+window.api.on('update-progress', (percent) => {
+    statusBar.style.color = 'var(--color-primary)';
+    if (percent < 100) {
+        statusBar.innerHTML = `<span>CØRE PDV :: BAIXANDO ATUALIZAÇÃO: ${percent}% ...</span>`;
+    } else {
+        statusBar.innerHTML = '<span>CØRE PDV :: DOWNLOAD CONCLUÍDO! AGUARDANDO REINICIALIZAÇÃO...</span>';
+    }
+});
+
 // Renderização da Lista de Produtos
 function renderProducts(list) {
     currentFiltered = list;

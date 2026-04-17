@@ -107,18 +107,18 @@ function createWindow() {
 app.on('ready', () => {
   logger.info("Sistema CØRE iniciado.");
   initDB();
-  performBackup(); // Realiza backup antes de qualquer operação
-  createApplicationMenu(); // Carrega o menu personalizado em PT-BR
+  performBackup(); 
+  createApplicationMenu(); 
   startSyncService();
   
-  // Assíncrono com a abertura da tela para evitar bloqueio offline
-  const { initAutoUpdater } = require('./updater');
-  initAutoUpdater();
-
-  // Registra todos os manipuladores de IPC a partir do módulo dedicado
-  registerIpcHandlers(mainWindow);
-
+  // Primeiro criamos a janela
   createWindow();
+
+  // Agora registramos o que depende da janela
+  const { initAutoUpdater } = require('./updater');
+  initAutoUpdater(mainWindow); // Passamos a janela para o updater
+
+  registerIpcHandlers(mainWindow);
 });
 
 app.on('window-all-closed', function () {
