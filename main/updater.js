@@ -60,36 +60,55 @@ function initAutoUpdater() {
 async function checkForUpdatesManual() {
     const { dialog, app } = require('electron');
     
-    // Em modo dev, o electron-updater agora usará o arquivo dev-app-update.yml
-    if (!app.isPackaged) {
-        logger.info('Verificação manual de update iniciada em modo desenvolvimento.');
-    }
+    logger.info('Solicitação de verificação manual de atualizações.');
 
     try {
+        // Feedback básico se for possível (opcional, mas bom para debug)
         const result = await autoUpdater.checkForUpdates();
         
-        // Se chegar aqui sem erro e o resultado indicar que a versão é a mesma, informa o usuário positivamente.
-        if (result && result.updateInfo.version === autoUpdater.currentVersion.version) {
+        if (!result) {
+            dialog.showMessageBox({
+                type: 'info',
+                title: 'CØRE Update',
+                message: 'Verificação concluída.',
+                detail: 'O servidor não retornou informações. Tente novamente em instantes.'
+            });
+            return;
+        }
+
+        const currentVer = autoUpdater.currentVersion ? autoUpdater.currentVersion.version : app.getVersion();
+        const latestVer = result.updateInfo.version;
+
+        if (latestVer === currentVer) {
             dialog.showMessageBox({
                 type: 'info',
                 title: 'CØRE Update',
                 message: 'Sistema Atualizado!',
-                detail: `Você já está usando a versão mais recente do CØRE PDV (v${autoUpdater.currentVersion.version}).`
+                detail: `Você já está usando a versão mais recente (v${currentVer}).`
             });
-        }
-    } catch (e) {
-        logger.error(`Erro na verificação manual de update: ${e.message}`);
-        
-        // Tratamento para 404 ou arquivo manifesto ausente: interpreta como "já atualizado" para o usuário
-        if (e.message.indexOf('404') !== -1 || e.message.indexOf('latest.yml') !== -1) {
+        } else {
+            // Caso encontre uma versão diferente
             dialog.showMessageBox({
                 type: 'info',
                 title: 'CØRE Update',
-                message: 'Nenhuma nova atualização encontrada.',
-                detail: `O sistema está operando na versão v${require('electron').app.getVersion()} e não há manifestos de novas versões no servidor.`
+                message: 'Nova atualização encontrada!',
+                detail: `A versão v${latestVer} está disponível e o download já começou em segundo plano.\nVocê será avisado quando estiver pronto para instalar.`
+            });
+        }
+
+    } catch (e) {
+        logger.error(`Erro na verificação manual de update: ${e.message}`);
+        
+        // Tratamento amigável para 404/manifesto ausente
+        if (e.message.includes('404') || e.message.includes('latest.yml') || e.message.includes('dev-app-update.yml')) {
+            dialog.showMessageBox({
+                type: 'info',
+                title: 'CØRE Update',
+                message: 'Nenhuma atualização pendente.',
+                detail: `O sistema v${app.getVersion()} está operando com a versão mais recente disponível no servidor.`
             });
         } else {
-            dialog.showErrorBox('Erro de Conexão', 'Não foi possível conectar ao servidor de atualizações.\n\nVerifique sua internet ou tente novamente em alguns minutos. Se o erro persistir, consulte o suporte.');
+            dialog.showErrorBox('Erro de Conexão', 'Não foi possível buscar atualizações agora.\n\nVerifique sua conexão ou tente mais tarde.\nDetalhe: ' + e.message);
         }
     }
 }
