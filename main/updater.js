@@ -9,7 +9,8 @@ function initAutoUpdater() {
 
     // No modo dev, o updater usará o arquivo dev-app-update.yml para simular o ambiente de produção
     if (!app.isPackaged) {
-        logger.info('Auto-updater rodando em modo desenvolvimento (dev-app-update.yml ativo).');
+        autoUpdater.forceDevUpdateConfig = true;
+        logger.info('Auto-updater rodando em modo desenvolvimento (forceDevUpdateConfig ativo).');
     }
 
     logger.info('Inicializando electron-updater...');
