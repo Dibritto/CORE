@@ -162,7 +162,6 @@ const payDebtInput = document.getElementById('pay-debt-input');
 const payDebtMsg = document.getElementById('pay-debt-msg');
 const confirmPayDebtBtn = document.getElementById('confirm-pay-debt-btn');
 const closePayDebtBtn = document.getElementById('close-pay-debt-btn');
-const auditBtn = document.getElementById('audit-btn');
 
 // --- GESTÃO DE JANELAS (MUTEX) ---
 const ALL_OVERLAYS = [
