@@ -268,3 +268,10 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 76. **Suporte a Arquitetura Dupla (v1.0.25):**
     - **Problema:** Crash nativo imediato sugerindo incompatibilidade de arquitetura em máquinas de balcão legadas.
     - **Solução:** Configuração do CI para gerar builds tanto em `x64` quanto em `ia32` (32 bits), garantindo compatibilidade universal com processadores Windows antigos.
+
+77. **AutoUpdate Rigoroso e Monitoramento (v1.0.26):**
+    - **Ação:** Implementação de verificação periódica (a cada 60 minutos) para garantir a conformidade da versão.
+    - **Melhorias:** 
+        - Adição de logs de progresso de download para auditoria.
+        - Gatilho imediato de bypass em caso de instabilidade de rede ou erros de assinatura.
+        - Mensagens traduzidas e polidas para feedback ao usuário.

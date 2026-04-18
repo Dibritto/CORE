@@ -12,19 +12,32 @@ function initAutoUpdater(win) {
 
     autoUpdater.on('error', (err) => {
         logger.error(`Erro no updater: ${err.message}`);
-        // Se o erro for de assinatura (o que está acontecendo agora), forçamos o manual
-        if (err.message.includes('signature') || err.message.includes('Authenticode')) {
-            logger.info('Bloqueio de assinatura detectado. Acionando bypass...');
+        // Se houver erro de rede ou assinatura, tentamos o bypass de emergência
+        if (err.message.includes('signature') || err.message.includes('Authenticode') || err.message.includes('net::')) {
+            logger.info('Instabilidade detectada no fluxo oficial. Acionando bypass de segurança...');
             handleEmergencyUpdate();
         }
     });
 
+    autoUpdater.on('download-progress', (progressObj) => {
+        let log_message = `Download: ${progressObj.percent.toFixed(2)}%`;
+        log_message = log_message + ' (' + (progressObj.transferred / 1024 / 1024).toFixed(2) + ' MB / ' + (progressObj.total / 1024 / 1024).toFixed(2) + ' MB)';
+        logger.info(log_message);
+    });
+
     autoUpdater.on('update-downloaded', (info) => {
-        logger.info('Update baixado via canal oficial.');
+        logger.info(`Update v${info.version} baixado e pronto para instalação.`);
         askToInstall(info.version);
     });
 
-    autoUpdater.checkForUpdatesAndNotify().catch(e => logger.error(e.message));
+    // Verificação inicial
+    autoUpdater.checkForUpdatesAndNotify().catch(e => logger.error(`Falha no check inicial: ${e.message}`));
+
+    // Verificação Periódica (a cada 60 minutos)
+    setInterval(() => {
+        logger.info("Iniciando verificação periódica de atualizações...");
+        autoUpdater.checkForUpdates().catch(e => logger.error(`Erro na verificação periódica: ${e.message}`));
+    }, 60 * 60 * 1000);
 }
 
 function askToInstall(version) {
