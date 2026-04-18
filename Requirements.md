@@ -261,3 +261,6 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
         - Desativação forçada de GPU via argumentos de linha de comando (`appendSwitch`).
         - Implementação de `try-catch` na inicialização do Banco de Dados para detectar ausência de dependências nativas (Visual C++ Redist).
         - Mensagens de erro informativas em vez de encerramento silencioso.
+
+75. **Diagnóstico de Erros Detalhado (v1.0.24):**
+    - **Ação:** Atualização da caixa de diálogo de erro crítico para exibir a mensagem da exceção, permitindo diagnóstico remoto via captura de tela do usuário.

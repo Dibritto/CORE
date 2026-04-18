@@ -30,8 +30,8 @@ if (!gotTheLock) {
 process.on('uncaughtException', (err) => {
     logger.error(`CRASH FATAL: ${err.stack}`);
     if (app.isPackaged) {
-        dialog.showErrorBox('Erro Crítico', 'O sistema encontrou um erro fatal.\nConsulte o suporte técnico.');
-    process.exit(1);
+        dialog.showErrorBox('Erro Crítico', `O sistema encontrou um erro fatal:\n\n${err.message}\n\nConsulte o suporte técnico enviando o print desta tela.`);
+        app.exit(1);
     }
 });
 
