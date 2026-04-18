@@ -42,27 +42,60 @@ function askToInstall(version) {
     });
 }
 
-function handleEmergencyUpdate() {
-    // Caminho padrão onde o Windows esconde o download falho por assinatura
-    const pendingFolder = path.join(process.env.LOCALAPPDATA, 'core-updater', 'pending');
-    if (fs.existsSync(pendingFolder)) {
-        const files = fs.readdirSync(pendingFolder);
-        const installer = files.find(f => f.endsWith('.exe'));
+function findInstallerInFolder(folder) {
+    if (!fs.existsSync(folder)) return null;
+    try {
+        const files = fs.readdirSync(folder);
+        const installer = files.find(f => f.endsWith('.exe') && f.includes('Setup'));
         if (installer) {
-            const fullPath = path.join(pendingFolder, installer);
-            dialog.showMessageBox({
-                type: 'warning',
-                title: 'Atualização Independente',
-                message: 'O Windows bloqueou a verificação automática, mas o arquivo está pronto.',
-                detail: 'Deseja forçar a instalação manual? O sistema será reiniciado.',
-                buttons: ['Forçar Agora', 'Cancelar']
-            }).then(res => {
-                if (res.response === 0) {
-                    spawn(fullPath, ['/S'], { detached: true, stdio: 'ignore' }).unref();
-                    app.exit(0);
-                }
-            });
+            const fullPath = path.join(folder, installer);
+            const stats = fs.statSync(fullPath);
+            // Validação mínima de 10MB
+            if (stats.size > 10 * 1024 * 1024) {
+                return { path: fullPath, size: stats.size, name: installer };
+            }
         }
+    } catch (e) {
+        logger.error(`Erro ao ler pasta ${folder}: ${e.message}`);
+    }
+    return null;
+}
+
+function handleEmergencyUpdate() {
+    const locations = [
+        path.join(process.env.LOCALAPPDATA, 'core-updater', 'pending'),
+        process.env.TEMP,
+        path.join(process.env.USERPROFILE, 'Downloads')
+    ];
+
+    let foundInstaller = null;
+
+    for (const location of locations) {
+        logger.info(`Bypass: Verificando local: ${location}`);
+        foundInstaller = findInstallerInFolder(location);
+        if (foundInstaller) break;
+    }
+
+    if (foundInstaller) {
+        logger.info(`Bypass: Instalador localizado em ${foundInstaller.path} (${(foundInstaller.size / 1024 / 1024).toFixed(2)} MB)`);
+        
+        dialog.showMessageBox({
+            type: 'warning',
+            title: 'Recuperação de Atualização',
+            message: 'O Windows bloqueou a instalação automática por segurança.',
+            detail: `Uma versão válida (${(foundInstaller.size / 1024 / 1024).toFixed(2)} MB) foi localizada e está pronta para ser aplicada. Deseja prosseguir com a instalação manual forçada?`,
+            buttons: ['Instalar Agora', 'Cancelar'],
+            defaultId: 0
+        }).then(res => {
+            if (res.response === 0) {
+                logger.info(`Bypass: Executando ${foundInstaller.path}...`);
+                spawn(foundInstaller.path, ['/S'], { detached: true, stdio: 'ignore' }).unref();
+                app.exit(0);
+            }
+        });
+    } else {
+        logger.warn('Bypass: Nenhum instalador válido encontrado nos locais padrão.');
+        dialog.showErrorBox('Atualização Indisponível', 'Não foi possível localizar o arquivo de atualização automaticamente.\n\nPor favor, baixe a versão mais recente manualmente em: https://github.com/Dibritto/CORE/releases');
     }
 }
 

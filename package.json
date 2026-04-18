@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "CØRE - Sistema Operacional Comercial Híbrido",
   "repository": {
     "type": "git",
@@ -29,19 +29,12 @@
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico",
-      "cscLink": "assets/codesign.pfx",
-      "cscKeyPassword": "CorePDV@2025!"
+      "cscLink": "assets/codesign.pfx"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "Dibritto",
-      "repo": "CORE",
-      "releaseType": "release"
     },
     "files": [
       "**/*",

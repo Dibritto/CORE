@@ -231,3 +231,15 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 
 69. **Teste de Fogo do Bypass Independente (v1.0.19):**
     - **Ação:** Validação da atualização automática com contorno de bloqueio de assinatura digital.
+
+70. **Auditoria e Blindagem de AutoUpdate (Audit 1.0):**
+    - **Ação:** Auditoria técnica profunda no sistema de atualizações concluída e recomendações implementadas.
+    - **Melhorias Realizadas:**
+        - **Segurança:** Remoção de credencial exposta no `package.json` e limpeza de redundâncias.
+        - **Robustez Multi-Nível:** O disparador de emergência agora busca o instalador em múltiplos locais (Pasta Pending, Temp do Sistema e Downloads) caso o Windows bloqueie o fluxo oficial.
+        - **Integridade:** Adicionada validação de tamanho mínimo (10MB) para evitar execução de arquivos corrompidos.
+        - **UX de Recuperação:** Caso a localização automática falhe, o sistema agora orienta o usuário com um link direto para o repositório de releases.
+    - **Resultado:** Sistema de atualização blindado contra falhas de rede, permissões de disco e ausência de assinatura digital comercial.
+
+71. **Versão de Teste Blindada (v1.0.20):**
+    - **Ação:** Lançamento de versão para validar o novo sistema de busca multi-local e integridade de arquivo.
