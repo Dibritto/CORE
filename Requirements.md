@@ -264,3 +264,7 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 
 75. **Diagnóstico de Erros Detalhado (v1.0.24):**
     - **Ação:** Atualização da caixa de diálogo de erro crítico para exibir a mensagem da exceção, permitindo diagnóstico remoto via captura de tela do usuário.
+
+76. **Suporte a Arquitetura Dupla (v1.0.25):**
+    - **Problema:** Crash nativo imediato sugerindo incompatibilidade de arquitetura em máquinas de balcão legadas.
+    - **Solução:** Configuração do CI para gerar builds tanto em `x64` quanto em `ia32` (32 bits), garantindo compatibilidade universal com processadores Windows antigos.

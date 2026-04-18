@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "description": "CØRE - Sistema Operacional Comercial Híbrido",
   "repository": {
     "type": "git",
@@ -27,9 +27,16 @@
       "releaseType": "release"
     },
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico",
-      "cscLink": "assets/codesign.pfx"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
     },
     "nsis": {
       "oneClick": false,
