@@ -197,6 +197,11 @@ async function init() {
     applySettings(storeName, themeColor);
     
     loginUserIn.focus();
+
+    // TESTE DE AUTO-UPDATE (v1.0.27)
+    setTimeout(() => {
+        showStatus('✨ CØRE v1.0.27 :: ATUALIZAÇÃO BEM SUCEDIDA! (MODO TESTE)', false);
+    }, 2000);
 }
 
 function applySettings(name, color) {

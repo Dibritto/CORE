@@ -275,3 +275,7 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
         - Adição de logs de progresso de download para auditoria.
         - Gatilho imediato de bypass em caso de instabilidade de rede ou erros de assinatura.
         - Mensagens traduzidas e polidas para feedback ao usuário.
+
+78. **Teste de AutoUpdate Assistido (v1.0.27):**
+    - **Objetivo:** Validar o fluxo de ponta a ponta (download -> instalação -> reinicialização).
+    - **Alteração:** Adição de mensagem visual (Toast) no frontend confirmando a versão 1.0.27 após o boot.
