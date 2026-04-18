@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "CØRE - Sistema Operacional Comercial Híbrido",
   "repository": {
     "type": "git",
@@ -34,7 +34,13 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "createDesktopShortcut": true,
+      "allowElevation": true,
+      "perMachine": false,
+      "shortcutName": "CORE PDV",
+      "artifactName": "${productName} Setup ${version}.${ext}",
+      "uninstallDisplayName": "CORE PDV",
+      "deleteAppDataOnUninstall": false
     },
     "files": [
       "**/*",

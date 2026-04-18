@@ -243,3 +243,10 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 
 71. **Versão de Teste Blindada (v1.0.20):**
     - **Ação:** Lançamento de versão para validar o novo sistema de busca multi-local e integridade de arquivo.
+
+72. **Correção de Crash e Estabilidade do Instalador (v1.0.21):**
+    - **Problema:** O instalador intermitentemente causava o fechamento do programa ou falha na atualização devido a conflitos de processos e permissões no Windows.
+    - **Solução:** 
+        - Implementação de **Single Instance Lock** para evitar que múltiplas janelas do CØRE corrompam os dados ou travem o executável.
+        - Refatoração da configuração NSIS (`perMachine: false`, `allowElevation: true`) para garantir que as atualizações funcionem sem exigir senha de administrador em cada checkout.
+        - Adição de logs de início imediato para facilitar o diagnóstico de "crash no boot".

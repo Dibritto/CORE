@@ -2,8 +2,24 @@ const { app, BrowserWindow, Menu, dialog, shell } = require('electron');
 const path = require('path');
 const logger = require('./logger');
 
+logger.info("--- CØRE Iniciando Processo Principal ---");
+
 // Robustez: Desabilita aceleração de hardware para evitar erros de renderização/rede em PDVs
 app.disableHardwareAcceleration();
+
+// Bloqueio de Instância Única: Garante que apenas um CØRE esteja aberto por vez
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+    app.quit();
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Se tentarem abrir outra instância, focamos na janela principal atual
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
+        }
+    });
+}
 
 // Tratamento de Erros Críticos (Global) - deve ser early as possible
 process.on('uncaughtException', (err) => {
