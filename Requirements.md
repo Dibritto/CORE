@@ -250,3 +250,7 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
         - Implementação de **Single Instance Lock** para evitar que múltiplas janelas do CØRE corrompam os dados ou travem o executável.
         - Refatoração da configuração NSIS (`perMachine: false`, `allowElevation: true`) para garantir que as atualizações funcionem sem exigir senha de administrador em cada checkout.
         - Adição de logs de início imediato para facilitar o diagnóstico de "crash no boot".
+
+73. **Resolução de Erro de Desinstalação (v1.0.22):**
+    - **Problema:** Erro -1073740940 (Heap Corrupt) ao tentar desinstalar a v1.0.20/v1.0.21.
+    - **Solução:** Reversão para `perMachine: true` para alinhar as permissões de escrita em disco e garantir que o instalador tenha autoridade total para remover arquivos travados da versão anterior.
