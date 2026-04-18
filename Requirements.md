@@ -228,3 +228,6 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 
 68. **Validação Final da Arquitetura (v1.0.17):**
     - **Ação:** Teste de transição automática entre v1.0.16 e v1.0.17.
+
+69. **Teste de Fogo do Bypass Independente (v1.0.19):**
+    - **Ação:** Validação da atualização automática com contorno de bloqueio de assinatura digital.
