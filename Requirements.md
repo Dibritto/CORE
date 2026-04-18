@@ -254,3 +254,10 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 73. **Resolução de Erro de Desinstalação (v1.0.22):**
     - **Problema:** Erro -1073740940 (Heap Corrupt) ao tentar desinstalar a v1.0.20/v1.0.21.
     - **Solução:** Reversão para `perMachine: true` para alinhar as permissões de escrita em disco e garantir que o instalador tenha autoridade total para remover arquivos travados da versão anterior.
+
+74. **Início Seguro e Blindagem de GPU (v1.0.23):**
+    - **Problema:** Crash nativo "Parou de Funcionar" em hardwares legados.
+    - **Solução:** 
+        - Desativação forçada de GPU via argumentos de linha de comando (`appendSwitch`).
+        - Implementação de `try-catch` na inicialização do Banco de Dados para detectar ausência de dependências nativas (Visual C++ Redist).
+        - Mensagens de erro informativas em vez de encerramento silencioso.

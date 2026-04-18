@@ -4,7 +4,12 @@ const logger = require('./logger');
 
 logger.info("--- CØRE Iniciando Processo Principal ---");
 
-// Robustez: Desabilita aceleração de hardware para evitar erros de renderização/rede em PDVs
+// Robustez Extrema: Desabilita GPU via Command Line antes do app estar pronto
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-software-rasterizer');
+app.commandLine.appendSwitch('disable-gpu-compositing');
+app.commandLine.appendSwitch('disable-gpu-rasterization');
+app.commandLine.appendSwitch('disable-gpu-sandbox');
 app.disableHardwareAcceleration();
 
 // Bloqueio de Instância Única: Garante que apenas um CØRE esteja aberto por vez
@@ -121,20 +126,31 @@ function createWindow() {
 }
 
 app.on('ready', () => {
-  logger.info("Sistema CØRE iniciado.");
-  initDB();
-  performBackup(); 
-  createApplicationMenu(); 
-  startSyncService();
-  
-  // Primeiro criamos a janela
-  createWindow();
+    try {
+        logger.info("Sistema CØRE: Sinal 'ready' recebido. Iniciando componentes...");
+        
+        try {
+            initDB();
+            logger.info("Banco de dados inicializado com sucesso.");
+        } catch (dbErr) {
+            logger.error(`Erro crítico no Banco de Dados: ${dbErr.message}`);
+            dialog.showErrorBox("Erro de Banco de Dados", "O driver de banco de dados (SQLite3) falhou ao iniciar.\n\nCertifique-se de ter o 'Visual C++ Redistributable' instalado.");
+        }
 
-  // Agora registramos o que depende da janela
-  const { initAutoUpdater } = require('./updater');
-  initAutoUpdater(mainWindow); // Passamos a janela para o updater
+        performBackup(); 
+        createApplicationMenu(); 
+        startSyncService();
+        
+        createWindow();
 
-  registerIpcHandlers(mainWindow);
+        const { initAutoUpdater } = require('./updater');
+        initAutoUpdater(mainWindow);
+
+        registerIpcHandlers(mainWindow);
+    } catch (criticalErr) {
+        logger.error(`FALHA CRÍTICA NA INICIALIZAÇÃO: ${criticalErr.stack}`);
+        dialog.showErrorBox("Erro de Inicialização", "Ocorreu uma falha grave ao iniciar o CØRE. Verifique os logs.");
+    }
 });
 
 app.on('window-all-closed', function () {
