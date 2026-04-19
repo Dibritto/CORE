@@ -279,3 +279,9 @@ Esses atalhos melhoram a usabilidade e acessibilidade da aplicação.
 78. **Teste de AutoUpdate Assistido (v1.0.27):**
     - **Objetivo:** Validar o fluxo de ponta a ponta (download -> instalação -> reinicialização).
     - **Alteração:** Adição de mensagem visual (Toast) no frontend confirmando a versão 1.0.27 após o boot.
+
+79. **Estabilização de Vigilância (v1.0.28):**
+    - **Problema:** Regressão de crash silencioso na v1.0.26 devido a conflito de recursos no boot (32-bit).
+    - **Solução:** 
+        - Implementação de atraso de 10 minutos após o boot para iniciar o monitoramento de rede e 5 segundos para o check inicial.
+        - Adição de `null checks` rigorosos nos ouvintes do `autoUpdater` para evitar falhas por objetos indefinidos durante oscilações de conexão.
