@@ -198,9 +198,9 @@ async function init() {
     
     loginUserIn.focus();
 
-    // TESTE DE AUTO-UPDATE (v1.0.27)
+    // TESTE DE AUTO-UPDATE (v1.0.28)
     setTimeout(() => {
-        showStatus('✨ CØRE v1.0.27 :: ATUALIZAÇÃO BEM SUCEDIDA! (MODO TESTE)', false);
+        showStatus('✨ CØRE v1.0.28 :: ATUALIZAÇÃO BEM SUCEDIDA!', false);
     }, 2000);
 }
 

@@ -11,33 +11,42 @@ function initAutoUpdater(win) {
     autoUpdater.autoInstallOnAppQuit = false;
 
     autoUpdater.on('error', (err) => {
-        logger.error(`Erro no updater: ${err.message}`);
+        const msg = err ? err.message : 'Erro desconhecido';
+        logger.error(`Erro no updater: ${msg}`);
         // Se houver erro de rede ou assinatura, tentamos o bypass de emergência
-        if (err.message.includes('signature') || err.message.includes('Authenticode') || err.message.includes('net::')) {
+        if (msg.includes('signature') || msg.includes('Authenticode') || msg.includes('net::')) {
             logger.info('Instabilidade detectada no fluxo oficial. Acionando bypass de segurança...');
             handleEmergencyUpdate();
         }
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
-        let log_message = `Download: ${progressObj.percent.toFixed(2)}%`;
-        log_message = log_message + ' (' + (progressObj.transferred / 1024 / 1024).toFixed(2) + ' MB / ' + (progressObj.total / 1024 / 1024).toFixed(2) + ' MB)';
-        logger.info(log_message);
+        if (!progressObj) return;
+        const percent = progressObj.percent ? progressObj.percent.toFixed(2) : '0';
+        const transferred = progressObj.transferred ? (progressObj.transferred / 1024 / 1024).toFixed(2) : '0';
+        const total = progressObj.total ? (progressObj.total / 1024 / 1024).toFixed(2) : '0';
+        
+        logger.info(`Download: ${percent}% (${transferred} MB / ${total} MB)`);
     });
 
     autoUpdater.on('update-downloaded', (info) => {
+        if (!info) return;
         logger.info(`Update v${info.version} baixado e pronto para instalação.`);
         askToInstall(info.version);
     });
 
-    // Verificação inicial
-    autoUpdater.checkForUpdatesAndNotify().catch(e => logger.error(`Falha no check inicial: ${e.message}`));
+    // Verificação inicial com pequeno atraso para estabilidade do boot
+    setTimeout(() => {
+        autoUpdater.checkForUpdatesAndNotify().catch(e => logger.error(`Falha no check inicial: ${e.message}`));
+    }, 5000);
 
-    // Verificação Periódica (a cada 60 minutos)
-    setInterval(() => {
-        logger.info("Iniciando verificação periódica de atualizações...");
-        autoUpdater.checkForUpdates().catch(e => logger.error(`Erro na verificação periódica: ${e.message}`));
-    }, 60 * 60 * 1000);
+    // Verificação Periódica (a cada 2 horas) com atraso inicial de 10 min
+    setTimeout(() => {
+        setInterval(() => {
+            logger.info("Iniciando verificação periódica de atualizações...");
+            autoUpdater.checkForUpdates().catch(e => logger.error(`Erro na verificação periódica: ${e.message}`));
+        }, 120 * 60 * 1000);
+    }, 10 * 60 * 1000);
 }
 
 function askToInstall(version) {
