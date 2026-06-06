@@ -59,7 +59,16 @@ function askToInstall(version) {
         defaultId: 0
     }).then((result) => {
         if (result.response === 0) {
-            autoUpdater.quitAndInstall(true, true);
+            try {
+                const { getDB } = require('../database/db');
+                const db = getDB();
+                if (db) db.close();
+            } catch (e) {
+                // ignora
+            }
+            setTimeout(() => {
+                autoUpdater.quitAndInstall(false, true);
+            }, 500);
         }
     });
 }
