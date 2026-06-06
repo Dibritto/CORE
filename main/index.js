@@ -159,6 +159,28 @@ app.on('window-all-closed', function () {
   }
 });
 
+let isQuitting = false;
+app.on('before-quit', (event) => {
+  if (isQuitting) return;
+  
+  logger.info("Sistema CØRE encerrando. Finalizando banco de dados...");
+  try {
+      const { getDB } = require('../database/db');
+      const db = getDB();
+      if (db) {
+          event.preventDefault();
+          isQuitting = true;
+          db.close((err) => {
+              if (err) logger.error("Erro ao fechar DB:", err.message);
+              else logger.info("DB fechado com sucesso.");
+              app.quit();
+          });
+      }
+  } catch (e) {
+      logger.error("Erro no shutdown:", e.message);
+  }
+});
+
 app.on('activate', function () {
   if (mainWindow === null) {
     createWindow();

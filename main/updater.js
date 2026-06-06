@@ -59,9 +59,6 @@ function askToInstall(version) {
         defaultId: 0
     }).then((result) => {
         if (result.response === 0) {
-            const { BrowserWindow } = require('electron');
-            app.removeAllListeners('window-all-closed');
-            BrowserWindow.getAllWindows().forEach(w => w.destroy());
             autoUpdater.quitAndInstall(true, true);
         }
     });
