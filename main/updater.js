@@ -131,6 +131,7 @@ function handleEmergencyUpdate() {
     }
 }
 
+// Função de teste manual de atualização
 async function checkForUpdatesManual() {
     try {
         await autoUpdater.checkForUpdates();
@@ -140,3 +141,5 @@ async function checkForUpdatesManual() {
 }
 
 module.exports = { initAutoUpdater, checkForUpdatesManual };
+
+
