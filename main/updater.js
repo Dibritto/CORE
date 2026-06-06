@@ -111,7 +111,7 @@ function handleEmergencyUpdate() {
         }).then(res => {
             if (res.response === 0) {
                 logger.info(`Bypass: Executando ${foundInstaller.path}...`);
-                spawn(foundInstaller.path, ['/S'], { detached: true, stdio: 'ignore' }).unref();
+                spawn(foundInstaller.path, ['/S'], { detached: true, stdio: 'ignore', shell: true, windowsHide: false }).unref();
                 app.exit(0);
             }
         });
