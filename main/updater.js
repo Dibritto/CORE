@@ -111,8 +111,9 @@ function handleEmergencyUpdate() {
         }).then(res => {
             if (res.response === 0) {
                 logger.info(`Bypass: Executando ${foundInstaller.path}...`);
-                spawn(foundInstaller.path, ['/S'], { detached: true, stdio: 'ignore', shell: true, windowsHide: false }).unref();
-                app.exit(0);
+                const psCommand = `Start-Process -FilePath "${foundInstaller.path}" -ArgumentList "/S"`;
+                spawn('powershell.exe', ['-NoProfile', '-WindowStyle', 'Hidden', '-Command', psCommand], { detached: true, stdio: 'ignore' }).unref();
+                setTimeout(() => app.exit(0), 1000);
             }
         });
     } else {
